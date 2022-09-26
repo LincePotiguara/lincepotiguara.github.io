@@ -1,0 +1,124 @@
+<!doctype html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <link rel="stylesheet" href="index.css">
+    <title>Lince Potiguara | Page</title>
+</head>
+<body>
+    <div class="content">
+        <h1>Esta IA Cria Pinturas Realistas</h1>
+        <h2>Inteligência Artificial cria pinturas realistas, também ao estilo de Rembrandt e Picasso</h2>
+        <p>O poder computacional exponencial de computadores permite aplicações antes impensáveis, dentre elas, o aprendizado de máquina.</p>
+        <p>Atividades criativas antes pensadas como o refúgio da humanidade caso robôs tomassem nosso emprego, agora podem ser feitas por computadores - e eles são bons nisso. Mas ao invés de nos preocuparmos com um futuro distópico concentremo-nos em um presente animador. Essa IA permite a criação de imagens lindas e criativas mesmo à pessoa desprovida de dom artístico.</p>
+        <p>Atualmente IAs como essa estão sendo usadas para criar imagens para ilustrar clips de música.</p>
+        <a href="https://www.youtube.com/watch?v=s3zwUbaxiKc"><img src="esta-ia-cria-pinturas-realistas/bohemian rhapsody.jpg" width="800" height="450"></a>
+        <figcaption>clique na imagem para abrir o vídeo</figcaption>
+        <p>Também exploram o espaço latente para interpolar duas imagens.</p>
+        <video style="padding: 0 144px 0 144px;" width="512px" height="512px" controls autoplay>
+            <source src="esta-ia-cria-pinturas-realistas/monolito.mp4" type="video/mp4">
+        </video>
+        <p>Comecemos com um exemplo simples: livro como rato.</p>
+        <div class="four-img">
+            <div>
+                <img class="fit-img" src="esta-ia-cria-pinturas-realistas/livro como rato1.png">
+                <img class="fit-img" src="esta-ia-cria-pinturas-realistas/livro como rato2.png">
+            </div>
+            <div>
+                <img class="fit-img" src="esta-ia-cria-pinturas-realistas/livro como rato3.png">
+                <img class="fit-img" src="esta-ia-cria-pinturas-realistas/livro como rato4.png">
+            </div>
+        </div>
+        <figcaption> livro como rato </figcaption>
+        <p>A imagem de um livro está evidente, mas a outra parte não é tão óbvia. Em junho de 2022, <a href="https://analyticsindiamag.com/when-ai-has-a-secret-language/">esta publicação</a> usou o texto gerado do DALL-E 2 como entrada e descobriu resultados consistentes, se der o comando para gerar uma pássaros com legenda, a legenda então foi usada como entrada e gerava imagens de pássaros.</p>
+        <p>Um teste preliminar o texto <i>raato rtraro</i> e <i>llriio reatatoro</i> como entrada [imagens de tais títulos] não mostra resultados semelhantes.</p>
+        <div class="four-img">
+            <div>
+                <img class="fit-img" src="esta-ia-cria-pinturas-realistas/raato rtraro1.png">
+                <img class="fit-img" src="esta-ia-cria-pinturas-realistas/raato rtraro2.png">
+            </div>
+            <div>
+                <img class="fit-img" src="esta-ia-cria-pinturas-realistas/raato rtraro3.png">
+                <img class="fit-img" src="esta-ia-cria-pinturas-realistas/raato rtraro4.png">
+            </div>
+        </div>
+        <figcaption> raato rtraro </figcaption>
+        <div class="four-img">
+            <div>
+                <img class="fit-img" src="esta-ia-cria-pinturas-realistas/llriio reatatoro1.png">
+                <img class="fit-img" src="esta-ia-cria-pinturas-realistas/llriio reatatoro2.png">
+            </div>
+            <div>
+                <img class="fit-img" src="esta-ia-cria-pinturas-realistas/llriio reatatoro3.png">
+                <img class="fit-img" src="esta-ia-cria-pinturas-realistas/llriio reatatoro4.png">
+            </div>
+        </div>
+        <figcaption> llriio reatatoro </figcaption>
+
+
+        <p>É importante lembrar que Stable Diffusion foi treinado usando o conjunto de dados <a href="https://laion.ai/blog/laion-5b/">LAION-5B</a> com 2 bilhões de excertos em inglês, 2 bilhões em línguas variadas e 1 bilhão em textos sem uma língua definida. Por isso os resultados em inglês são os de maior qualidade e será usado para a geração das imagens seguintes.</p>
+        <p>Traduzindo para o inglês, <i>book as mouse</i>.</p>
+        <div class="four-img">
+            <div>
+                <img class="fit-img" src="esta-ia-cria-pinturas-realistas/book as mouse1.png">
+                <img class="fit-img" src="esta-ia-cria-pinturas-realistas/book as mouse2.png">
+            </div>
+            <div>
+                <img class="fit-img" src="esta-ia-cria-pinturas-realistas/book as mouse3.png">
+                <img class="fit-img" src="esta-ia-cria-pinturas-realistas/book as mouse4.png">
+            </div>
+        </div>
+        <figcaption> book as mouse </figcaption>
+        <p>Certamente criativo, mas observe melhor as imagens. Um rato tem dois narizes, o outro está sobre um livro aberto com folhas de um lado, mas não do outro e as folhas não estão unidas no meio e o outro mostra um mouse sobre um livro que parece que tem dois meios.</p>
+        <p>Bom, outras IAs têm dificuldade com quantidade, será que essa também tem?</p>
+        <div class="four-img">
+            <div>
+                <img class="fit-img" src="esta-ia-cria-pinturas-realistas/two mice one book1.png">
+                <img class="fit-img" src="esta-ia-cria-pinturas-realistas/two mice one book2.png">
+            </div>
+            <div>
+                <img class="fit-img" src="esta-ia-cria-pinturas-realistas/two mice one book3.png">
+                <img class="fit-img" src="esta-ia-cria-pinturas-realistas/two mice one book4.png">
+            </div>
+        </div>
+        <figcaption> two mice one book </figcaption>
+        <p>Stable Diffusion parece compreender o significado de dois camundongos, mas tem dificuldade de entender um livro. A IA define a estética da imagem mesmo sem explicitarmos. Será que conseguiremos resultados melhores apenas pedindo?</p>
+        <div class="four-img">
+            <div>
+                <img class="fit-img" src="esta-ia-cria-pinturas-realistas/realistic two mice one book1.png">
+                <img class="fit-img" src="esta-ia-cria-pinturas-realistas/realistic two mice one book2.png">
+            </div>
+            <div>
+                <img class="fit-img" src="esta-ia-cria-pinturas-realistas/realistic two mice one book3.png">
+                <img class="fit-img" src="esta-ia-cria-pinturas-realistas/realistic two mice one book4.png">
+            </div>
+        </div>
+        <figcaption> realistic two mice one book </figcaption>
+        <p>Resultados marginalmente melhores, mas ainda não é o suficiente. Felizmente uma pessoa já tentou melhorar os parâmetros de geração e encontrou uma sequencia de texto que resulta em imagens mais bonitas, infelizmente essa pessoa usou esses poderes para ressuscitar o <a href="https://minimaxir.com/2022/09/stable-diffusion-ugly-sonic/">Sonic realista do filme</a>.</p>
+        <div class="four-img">
+            <div>
+                <img class="fit-img" src="esta-ia-cria-pinturas-realistas/mäuse1.png">
+                <img class="fit-img" src="esta-ia-cria-pinturas-realistas/mäuse2.png">
+            </div>
+            <div>
+                <img class="fit-img" src="esta-ia-cria-pinturas-realistas/mäuse3.png">
+                <img class="fit-img" src="esta-ia-cria-pinturas-realistas/mäuse4.png">
+            </div>
+        </div>
+        <figcaption> two mice one book dynamic pose, detailed background, aesthetic, captivating, (((concept art, hyper-detailed and intricate, realistic shaded, fine detail, realistic proportions, symmetrical, sharp focus, 8K resolution, with lineart flat ink, trending on pixiv fanbox))) </figcaption>
+        <p>Imagens bem melhores. A antropomorfização dos ratos deve ser uma consequência de resultados artísticos.</p>
+        <p>Essa IA é bastante poderosa e cria imagens que podem ser redimensionadas usando IA para um tamanho maior. Uma IA que fez isso conseguiu até ganhar o <a href="https://www.vice.com/en/article/bvmvqm/an-ai-generated-artwork-won-first-place-at-a-state-fair-fine-arts-competition-and-artists-are-pissed">primeiro lugar numa competição com humanos</a>.</p>
+        <p>As IAs estão evoluindo a passos largos. Há um ano atrás DALL-E foi lançado e conseguia criar imagens de adequada qualidade e a inovação era a capacidade de misturar conceitos. DALL-E 2 foi uma evolução que gerava imagens melhores e com misturando ainda mais conceitos, no entanto o modelo não estava acessível a todos. Stable Diffusion é um modelo open source e foi usado para gerar as imagens da publicação. Qual será a próxima evolução que os cientistas criarão em seguida. Eu estou animado para ver.</p>
+    </div>
+</body>
+</html>
+
+
+
+
+
+
+
+
+
+

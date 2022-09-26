@@ -1,0 +1,32 @@
+h1 {
+    font-size: 21pt;
+}
+
+h2 {
+    font-size: 18pt;
+    color: #000000aa;
+    font-weight: normal;
+}
+
+p {
+    font-size: 15pt;
+}
+
+.content {
+    max-width: 800px;
+    margin: auto;
+}
+
+.fit-img {
+    width: 300px;
+    display: flex;
+    justify-content: center;
+}
+
+.four-img {
+    padding: 0 100px 0 100px;
+    display: flex;
+}
+figcaption {
+    text-align: center;
+}
