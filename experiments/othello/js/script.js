@@ -1,6 +1,7 @@
 // tabuleiro
 const main = document.getElementById('main');
 let board = null;
+let abstractBoard = null;
 // array para faciliar o acesso às células
 const cells = [];
 // array para estipular quais células são jogaveis, ou seja, podem armazenar uma peça
@@ -46,6 +47,20 @@ btnrestart.addEventListener("click", resetGame);
 btnrules.addEventListener("click", () => {displayRules(true);});
 closerules.addEventListener("click", () => {displayRules(false);});
 
+const chooseDifficulty = minimaxStrat(3, scoreAI);
+
+function makeAbstractBoard() {
+    abstractBoard = new Array(100);
+    for (let i = 0; i < abstractBoard.length; i++) {
+        abstractBoard[i] = "?";
+        if(i >= 11 && i <= 88) {
+            if(1 <= i % 10 && i % 10 <= 8) {
+                abstractBoard[i] = '.';
+            }
+        }
+    }
+    //return abstractBoard;
+}
 // função encarregada de iniciar o jogo
 function startGame() {
     // criando elemento tabuleiro e adicionando a página
@@ -54,7 +69,8 @@ function startGame() {
         main.appendChild(board);
     }
 
-    setStartingPosition(cells, false); // construindo estado inicial do jogo
+    makeAbstractBoard();
+    setStartingPosition(cells, abstractBoard, false); // construindo estado inicial do jogo
     setScoreText(); // mostrando placar inicial
 
     // redefinindo objetos visiveis e invisíveis na página
@@ -67,7 +83,7 @@ function startGame() {
 function resetGame() {
     blackCount = 0;
     whiteCount = 0;
-    setStartingPosition(cells, true);
+    setStartingPosition(cells, abstractBoard, true);
     setScoreText();
 }
 
@@ -123,7 +139,7 @@ function setScoreText() {
 }
 
 // função para estabelecer estado inicial do jogo
-function setStartingPosition(brd, isReset) {
+function setStartingPosition(brd, absBoard, isReset) {
     turn = playerHuman; // o jogador sempre terá o primeiro movimento
 
     // se a função é chamada com o intuito de redefinir o tabuleiro
@@ -138,12 +154,25 @@ function setStartingPosition(brd, isReset) {
         })
     };
 
-    insertPiece(44, WHITE, brd);
-    insertPiece(55, WHITE, brd);
-    insertPiece(54, BLACK, brd);
-    insertPiece(45, BLACK, brd);
+    insertPiece(44, WHITE, brd, absBoard);
+    insertPiece(55, WHITE, brd, absBoard);
+    insertPiece(54, BLACK, brd, absBoard);
+    insertPiece(45, BLACK, brd, absBoard);
 }
 
+function printBoard(b) {
+    if(arguments.length > 0) {
+        var cat = [];
+        for(let i = 0; i < 10; i++) {
+            cat.push(b.slice(i*10, i*10 + 10));
+        }
+        console.table(cat);
+        return;
+    }
+    for(let i = 0; i < 10; i++) {
+        console.log(abstractBoard.slice(i*10, i*10 + 10));
+    }
+}
 // função para criar células
 function createCell(id) {
     const newCell = document.createElement('div');
@@ -152,7 +181,7 @@ function createCell(id) {
     newCell.id = `${id}`;
     newCell.onclick = () => {
         // tenta fazer uma jogada para o jogador
-        play(playerHuman, id, cells);
+        play(playerHuman, id, cells, abstractBoard);
 
         // pede que o computador realize sua(s) jogada(s)
         // precisamos verificar múltiplas vezes se ainda é turno
@@ -161,25 +190,28 @@ function createCell(id) {
         // realiza movimentos até que o jogador tenha jogadas,
         //  ou até que o jogo acabe quando as jogadas legais
         // do computador também se esgotarem
-        while (turn == playerAI) aiPlay(newbieStrategy);
+        while (turn == playerAI) {
+            aiPlay(chooseDifficulty);
+        }
+        //while (turn == playerAI) aiPlay(newbieStrategy);
     };
 
     return newCell;
 }
 
 // função responsável por tentar realizar um movimento para um jogador
-function play(player, id, brd) {
+function play(player, id, brd, absBoard) {
     // um movimento só deve ser feito se forem verdadeiras as condições:
     //   -> o turno é do jogador
     //   -> a célula é válida
     //   -> o movimento é legal
     if (isPlayerTurn(player) && isValidCell(id) && isLegalMove(id, player, brd)) {
-        makeMove(id, player, brd);
+        makeMove(id, player, brd, absBoard);
         turn = nextPlayer(brd, player); // determina qual jogador terá o próximo turno
     }
     setScoreText(); // atualiza placar
 
-    return [brd, score(playerHuman, brd)];
+    //return [brd, score(playerHuman, brd)];
 }
 
 // função para determinar qual jogador deve executar a próxima jogada
@@ -213,7 +245,8 @@ function createPiece(color) {
 
 // função para inserir uma peça de
 // determinada cor em uma célula específica
-function insertPiece(id, color, brd) {
+function insertPiece(id, color, brd, absBoard) {
+    absBoard[id] = getColor(color);
     const cell = brd[id];
     const piece = createPiece(color);
 
@@ -222,6 +255,14 @@ function insertPiece(id, color, brd) {
     else whiteCount++;
 
     cell.appendChild(piece);
+}
+
+function getColor(player) {
+   if(player == BLACK){return "b"};
+   if(player == WHITE){return "w"};
+}
+function insertPieceAI(id, color, brd, absBoard) {
+    absBoard[id] = getColor(color);
 }
 
 // função para controlar a exibição 
@@ -245,6 +286,7 @@ function isLegalMove(move, player, brd) {
     function formsBracket(direction) {
         // retorna se é possivel encontrar outra peça 
         // do jogador na direção recebida
+        const it = move + direction;
         return findBracket(move, player, brd, direction);
     }
 
@@ -252,6 +294,25 @@ function isLegalMove(move, player, brd) {
     // true (celula escolhida esta vazia e movimento captura pelo menos 1 peça em pelo menos 1 direção)
     // false (celula escolhida não esta vazia ou movimento não captura nenhuma peça em nenhuma direção)
     return !cells[move].firstChild && DIRECTIONS.map(formsBracket).some((cell) => cell != null);
+}
+
+function isLegalMoveAI(move, player, brd, absBoard) {
+    // o movimento é legal se a nova peça está sendo
+    // inserida em uma célula válida vazia, e envolve
+    // uma ou mais peças do oponente com alguma outra peça 
+    // do jogador já posicionada no tabuleiro
+    function formsBracket(direction) {
+        // retorna se é possivel encontrar outra peça 
+        // do jogador na direção recebida
+        return findBracketAI(move, player, brd, absBoard, direction);
+    }
+    let ret;
+    // retorna:
+    // true (celula escolhida esta vazia e movimento captura pelo menos 1 peça em pelo menos 1 direção)
+    // false (celula escolhida não esta vazia ou movimento não captura nenhuma peça em nenhuma direção)
+    ret = (absBoard[move] == '.') && (DIRECTIONS.map(formsBracket).some((cell) => cell != null));
+    return ret;
+    //return !cells[move].firstChild && DIRECTIONS.map(formsBracket).some((cell) => cell != null);
 }
 
 // função para percorrer as células 
@@ -273,6 +334,25 @@ function findBracket(cell, player, brd, direction) {
     return brd[bracket].firstChild ? bracket : null;
 }
 
+function findBracketAI(cell, player, brd, absBoard, direction) {
+    let bracket = cell + direction;
+    const opp = opponent(player);
+
+    // se a primeira celula nesta direção possuir uma peça do mesmo jogador, retorne nulo
+    if(absBoard[bracket] == getColor(player)) return null;
+    //if (cellHoldsPieceOfColor(bracket, player, brd)) return null;
+    // ande na direção até encontrar uma célula que não contenha uma peça do oponente
+    //while (cellHoldsPieceOfColor(bracket, opp, brd)) bracket += direction;
+    while (absBoard[bracket] == getColor(opp)) bracket += direction;
+
+    // retorne:
+    // id da celula, caso contenha uma peça (obrigatoriamente do jogador)
+    // nulo, caso a celula não contenha peça
+    return (absBoard[bracket] == "w" || absBoard[bracket] == "b")? bracket : null;
+    //return brd[bracket].firstChild ? bracket : null;
+}
+
+
 // função para verificar se uma celula contém
 // uma peça de determinada cor
 function cellHoldsPieceOfColor(id, color, brd) {
@@ -292,17 +372,19 @@ function isPlayerTurn(player) {
 }
 
 // função para inverter a cor de peças capturadas
-function swapPieces(move, player, brd, direction) {
+function swapPieces(move, player, brd, absBoard, direction) {
     // procura o id da celula que forma a captura nesta direção
     const bracket = findBracket(move, player, brd, direction);
     let cell = move + direction;
-
+    const mine = (player == BLACK)? "b" : "w";
+    const opp = (opponent(player) == BLACK)? "b" : "w";
     // se o id é nulo, retorne
     if(!bracket) return;
 
     // ande na direção até chegar a célula de captura
     while (cell != bracket) {
         // troca de cor
+        absBoard[cell] = mine;
         brd[cell].firstChild.classList.remove(opponent(player));
         brd[cell].firstChild.classList.add(player);
         // muda placar
@@ -318,15 +400,39 @@ function swapPieces(move, player, brd, direction) {
     }
 }
 
+function swapPiecesAI(move, player, brd, absBoard, direction) {
+    // procura o id da celula que forma a captura nesta direção
+    const bracket = findBracketAI(move, player, brd, absBoard, direction);
+    let cell = move + direction;
+    const mine = getColor(player);
+    const opp = getColor(opponent(player));
+    // se o id é nulo, retorne
+    if(!bracket) return;
+
+    // ande na direção até chegar a célula de captura
+    while (cell != bracket) {
+        // troca de cor
+        absBoard[cell] = mine;
+        cell += direction;
+    }
+}
+
 // função para calcular os possiveis movimentos de um jogador
 function legalMoves(player, brd) {
     // retorna o id de todas as céculas que formam movimentos legais
     return playableCells.filter(move => isLegalMove(move, player, brd));
 }
+function legalMovesAI(player, brd, absBoard) {
+    // retorna o id de todas as céculas que formam movimentos legais
+    return playableCells.filter(move => isLegalMoveAI(move, player, brd, absBoard));
+}
 
 // função para verificar se o jogador possui movimentos
 function hasAvailableMoves(player, brd) {
     return legalMoves(player, brd).length > 0;
+}
+function hasAvailableMovesAI(player, brd, absBoard) {
+    return legalMoves(player, brd, absBoard).length > 0;
 }
 
 // função para avaliar vantagem de um jogador sobre outro
@@ -344,45 +450,80 @@ function score(player, brd) {
     return playerScore - oppScore;
 }
 
+function scoreAI(player, brd, absBoard) {
+    let playerScore = 0;
+    let oppScore = 0;
+
+    playableCells.forEach ((cell) => {
+        let piece = absBoard[cell];
+        if(piece == getColor(player)){
+            playerScore++;
+        }
+        else if(piece == getColor(opponent(player))) {
+            oppScore++;
+        }
+    });
+
+    return playerScore - oppScore;
+}
+
 // função para realizar um movimento de um jogador
-function makeMove(move, player, brd) {
-    insertPiece(move, player, brd);
-    DIRECTIONS.forEach(direction =>{
-        swapPieces(move, player, brd, direction);
+function makeMove(move, player, brd, absBoard) {
+    insertPiece(move, player, brd, absBoard);
+    DIRECTIONS.forEach(direction => {
+        swapPieces(move, player, brd, absBoard, direction);
     });
 
     return brd;
+}
+
+function makeMoveAI(move, player, brd, absBoard) {
+    insertPieceAI(move, player, brd, absBoard);
+    printBoard(absBoard);
+    DIRECTIONS.forEach(direction =>{
+        swapPiecesAI(move, player, brd, absBoard, direction);
+    });
+
+    return absBoard;
 }
 
 // função responsável pelas decisões e movimentos do computador
 function aiPlay(strategy) {
     const brd = cells;
     let ai = playerAI;
+    const absBoard = abstractBoard;
 
     // só executa movimentos em seus turnos
     if (isPlayerTurn(ai)) {
         // escolhe um movimento de acordo com a estratégia
-        let move = getMove(strategy, ai, brd);
+        let move = getMove(strategy, ai, brd, absBoard);
 
         // executa movimento
-        makeMove(move, ai, brd);
+        makeMove(move, ai, brd, absBoard);
         gameMoves.push(`${ai}${move}`);
+        //setTimeout(() => {yieldNextPlayer(brd, ai)}, 1000);
         turn = nextPlayer(brd, ai);
+        
         // atualiza placar
         setScoreText();
     }
-
-    return [brd, score(playerHuman, brd)];
+    //return [brd, scoreAI(playerHuman, brd, absBoard)];
+}
+function yieldNextPlayer(brd, ai){
+    turn = nextPlayer(brd, ai);
+    console.log('intervalo');
 }
 
 // função para escolher movimento do computador de acordo com a estrategia
-function getMove(strategy, player, brd) {
+function getMove(strategy, player, brd, absBoard) {
     // faz replica do tabuleiro para evitar jogadas indesejadas
     const copy = cloneBoard(brd);
+    const copyAbs = [...absBoard]
     // determina movimento
-    const move = strategy(player, copy);
+    const move = strategy(player, copy, copyAbs);
 
-    // se a celula escolhida não é valido ou o movimento não é legal, returne nulo
+    // se a celula escolhida não é valido ou o movimento não é legal, retorne nulo
+    // acredito que não precise fazer checagem a mais
     if (!isValidCell(move) || !isLegalMove(move, player, brd)) return null;
 
     return move;
@@ -399,6 +540,20 @@ function cloneBoard(brd) {
     return clone;
 }
 
+function finalValue(player, brd) {
+    const diff = score(player, brd);
+    if (diff < 0) {return Number.MIN_SAFE_INTEGER/2};
+    if (diff > 0) {return Number.MAX_SAFE_INTEGER/2};
+    return diff;
+}
+
+function finalValueAI(player, brd) {
+    const diff = scoreAI(player, brd);
+    if (diff < 0) {return Number.MIN_SAFE_INTEGER/2};
+    if (diff > 0) {return Number.MAX_SAFE_INTEGER/2};
+    return diff;
+}
+
 function random(floor, ceiling) {
     return Math.floor(Math.random() * (ceiling - floor)) + floor;
 }
@@ -407,4 +562,41 @@ function newbieStrategy(player, brd) {
     const moves = legalMoves(player, brd);
 
     return moves[random(0, moves.length)];
+}
+
+function minimax(player, board, absBoard, depth, evaluate) {
+    const value = (brd) => -minimax(opponent(player), board, brd, depth -1, evaluate).minScore;
+    let ret;
+    printBoard(absBoard);
+    if(depth == 0) {
+        ret = {minScore: evaluate(player, board, absBoard), move: null};
+        return ret;
+    }
+    const moves = legalMoves(player, board);
+    // checar se existe algum movimento a ser feito
+    if(!moves) {
+        if(!hasAvailableMovesAI(opponent(player), board, absBoard)) {
+            return {minScore: finalValueAI(player, board, absBoard), move: null};
+        }
+        // passa o turno
+        ret = {minScore: value(absBoard), move: null};
+        return ret;
+    }
+    let move = moves[0];
+    let val = value(makeMoveAI(move, player, board, [...absBoard]));
+    let temp = val;
+    for (const m of moves) {
+        //temp = value(makeMove(m, player, cloneBoard(board), [...absBoard]));
+        temp = value(makeMoveAI(m, player, board, [...absBoard]));
+        if(temp > val) {
+            val = temp;
+            move = m;
+        }
+    }
+    ret = {minScore: value(absBoard), move: move};
+    return ret;
+}
+
+function minimaxStrat(depth, evaluate) {
+    return (player, brd, absBoard) => {return minimax(player, brd, absBoard, depth, evaluate).move};
 }
