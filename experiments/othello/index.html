@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="css/reset.css"/>
+    <link rel="stylesheet" href="css/style.css"/>
+    <script src="js/script.js" defer></script>
+    <title>Othello</title>
+</head>
+<body>
+    <div class="container">
+        <div class="display">
+            <h1>Othello</h1>
+            <div class="buttons">
+                <button id="btnstart" class="btn">Jogar</button>
+                <button id="btnrestart" class="btn">RESTART</button>
+                <button id="btnrules" class="btn">Regras</button>
+            </div>
+        </div>
+
+        <main id="main">
+            <div id="score">
+                <h3>Placar</h3>
+                <div id="gameinfo">
+                    <span id="white"></span>
+                    <span id="black"></span>
+                </div>
+                <p>Turno: <span id="turn"></span></p>
+            </div>
+        </main>
+
+        <div id="rules">
+            <button id="closerules">X</button>
+            <h2>Regras</h2>
+            <ul>
+                <li>Posicione sua peça de forma que englobe uma ou mais peças do oponente com outra peça sua no tabuleiro.</li>
+                <li>Capture as peças inimigas encapsuladas, tanto na horizontal quanto na vertical e diagonal, pela peça recém colocada.</li>
+                <li>Jogadores alternam as jogadas.</li>
+                <li>O jogo acaba quando o tabuleiro estiver cheio, ou quando não houver mais movimentos válidos.</li>
+                <li>Quem possuir mais peças ao final da partida, vence.</li>
+            </ul>
+        </div>
+    </div>
+</body>
+</html>

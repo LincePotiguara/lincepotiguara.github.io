@@ -1,0 +1,179 @@
+.container {
+    width: 512px;
+    margin: auto;
+    display: flow-root;
+    padding: 0 0 64px;
+}
+
+.display {
+    background-color: white;
+    margin: 32px auto;
+    padding: 16px 32px;
+    text-align: center;
+    font-size: 32px;
+    border: 8px solid black;
+    text-transform: uppercase;
+}
+
+.buttons {
+    margin: 16px auto;
+    box-sizing: border-box;
+    text-align: center;
+    display: flex;
+    justify-content: center;
+    gap: 16px;
+}
+
+.btn {
+    cursor: pointer;
+    background-color: #ff4444;
+    border: none;
+    padding: 16px 32px;
+    text-align: center;
+    color: antiquewhite;
+    text-transform: uppercase;
+    font-size: large;
+    font-weight: bold;
+    font-family: monospace;
+}
+
+.btn:hover {
+    background-color: red;
+}
+
+#btnrestart {
+    display: none;
+}
+
+#main {
+    display: none;
+}
+
+#board {
+    height: 512px;
+    width: 512px;
+    padding: 2px;
+    box-sizing: border-box;
+    background-color: #ff4444;
+    display: flex;
+    flex-direction: column;
+    gap: 2px 0;
+}
+
+.row {
+    flex-grow: 1;
+    flex-basis: 0;
+    display: flex;
+    gap: 2px;
+}
+
+.cell {
+    flex-grow: 1;
+    flex-basis: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: antiquewhite;
+}
+
+.blocked {
+    flex-grow: 0.5;
+    background: none;
+}
+
+.piece {
+    box-sizing: border-box;
+    border: 2px solid #777777;
+    border-radius: 50%;
+    height: 85%;
+    width: 85%;
+}
+
+.black {
+    background-color: black;
+}
+
+.white {
+    background-color: white;
+}
+
+#rules {
+    display: none;
+    margin: 32px auto 64px;
+    padding: 8px 0 8px 8px;
+    border: solid #ff4444 8px;
+    font-size: 20px;
+    background-color: antiquewhite;
+    font-family: monospace;
+}
+
+h2 {
+    text-align: center;
+    font-size: 32px;
+    font-family: monospace;
+    text-transform: uppercase;
+    margin: 8px auto 32px;
+    padding: 4px;
+    border-bottom: solid 2px #444444;
+    width: fit-content;
+}
+
+#closerules {
+    cursor: pointer;
+    background-color: black;
+    float: right;
+    border-radius: 50%;
+    margin: 16px;
+    width: 32px;
+    height: 32px;
+    color: white;
+    font-weight: bold;
+}
+
+#closerules:hover {
+    background-color: gray;
+    border: #444444 solid;
+}
+
+li {
+    margin: 16px 64px;
+}
+
+#score {
+    border: solid black 8px;
+    border-bottom: none;
+    padding: 0 64px;
+}
+
+#gameinfo {
+    display: flex;
+    justify-content: space-between;
+    padding: 8px 32px;
+    font-family: monospace;
+    text-transform: uppercase;
+    font-weight: bold;
+    font-size: 16px;
+}
+
+h3 {
+    text-align: center;
+    font-size: 32px;
+    font-family: monospace;
+    text-transform: uppercase;
+    margin: 8px auto 16px;
+    padding: 4px;
+    /* border-top: solid 2px #444444; */
+    border-bottom: solid 2px #444444;
+    /* width: fit-content; */
+}
+
+#score p {
+    display: block;
+    margin: 16px 0 0;
+    padding: 8px 8px 16px;
+    border-top: solid #444444 2px;
+    /* background-color: #dddddd; */
+    font-family: monospace;
+    text-transform: uppercase;
+    font-weight: bold;
+}
