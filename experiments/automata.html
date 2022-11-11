@@ -1,0 +1,29 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="UTF-8"/>
+    <title>Lince | Automata</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <link rel="stylesheet" href="automata/style.css">
+  </head>
+  <body>
+    <canvas id="canvas" width="576" height="576">
+      Canvas failed to initialize
+    </canvas>
+    <div class="controls">
+      <div class="map-controls">
+        <div class="element"><button button-play-pause><i class="fa fa-play"></i></button></div>
+        <div class="element"><button button-reload><i class="fa fa-refresh"></i></button></div>
+        <div class="element"><button button-play-once><i class="fa fa-plus"></i></button></div>
+      </div>
+      <div class="cell-controls">
+        <div class="element"><button button-blue class="individial">&#9632;</button></div>
+        <div class="element"><button button-black class="barrier">&#9632;</button></div>
+        <div class="element"><button button-green class="safety">&#9632;</button></div>
+        <div class="element"><button button-red class="danger">&#9632;</button></div>
+        <div class="element"><button button-red class="blank">&#9632;</button></div>
+      </div>
+    </div>
+    <script src="automata/control.js"></script>
+  </body>
+</html>

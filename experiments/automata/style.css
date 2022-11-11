@@ -1,0 +1,49 @@
+html, body {
+    height: 100%;
+    width: 100%;
+    margin: 0;
+    padding: 0;
+}
+body {
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    flex-direction: column;
+}
+button {
+    width: 50px;
+    margin: 0px 6px 0px 6px;
+}
+.controls {
+    display: flex;
+    justify-content: space-between;
+    flex-direction: row;
+    align-items: baseline;
+    
+    min-width: 576px;
+}
+.map-controls {
+    display: flex;
+}
+.cell-controls {
+    display: flex;
+}
+.individial {
+    background-color: rgb(55, 115, 187);
+}
+.barrier {
+    background-color: rgb(63, 63, 63);
+}.safety {
+    background-color: rgb(140, 255, 129);
+}
+.danger {
+    background-color: rgb(254, 96, 96);
+}
+.blank {
+    background-color: rgb(255, 255, 255);
+}
+canvas {
+    border: 1px solid rgba(0, 0, 0, 0.7);
+    /*background-color: #fff;*/
+}
+
