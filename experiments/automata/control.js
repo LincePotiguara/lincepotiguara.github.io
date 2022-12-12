@@ -2,11 +2,34 @@ const playPause = document.querySelector('[button-play-pause]');
 const reload = document.querySelector('[button-reload]');
 const playOnce = document.querySelector('[button-play-once]');
 
+
 const chooseBlue = document.querySelector('[button-blue]');
 const chooseBlack = document.querySelector('[button-black]');
 const chooseGreen = document.querySelector('[button-green]');
 const chooseRed = document.querySelector('[button-red]');
 const chooseWhite = document.querySelector('[button-white]');
+
+/*
+const placementButtons = {
+  blue: chooseBlue,
+  black: chooseBlack,
+  green: chooseGreen,
+  red: chooseRed,
+  white: chooseWhite
+};
+*/
+let placeChoice;
+
+// const placeChoices = ['blue', 'black', 'green', 'red', 'white'];
+chooseBlue.addEventListener('click', () => activatePlacement('blue'));
+chooseBlack.addEventListener('click', () => activatePlacement('black'));
+chooseGreen.addEventListener('click', () => activatePlacement('green'));
+chooseRed.addEventListener('click', () => activatePlacement('red'));
+chooseWhite.addEventListener('click', () => activatePlacement('white'));
+
+function activatePlacement(color) {
+  placeChoice = color;
+}
 
 playPause.addEventListener('click', () => togglePlaying());
 reload.addEventListener('click', () => reloadBoard());
@@ -18,6 +41,7 @@ const TARGET_FPS = 2;
 //const CELL_SIZE= 8;
 const SIZE = 3;
 const canvas = document.querySelector('#canvas');
+canvas.onmousemove = onMouseMove;
 const ctx = canvas.getContext('2d');
 const {height, width} = canvas;
 const DEAD = false;
@@ -31,10 +55,24 @@ let frameID;
 let board;
 
 const COLORS = {
-    live: 'rgba(40, 169, 255, 1)',
-    dead: 'rgba(255, 255, 255, 1)'
-  };
+  live: 'rgba(40, 169, 255, 1)',
+  dead: 'rgba(255, 255, 255, 1)',
+  mouse: 'rgba(255, 50, 50, 1)'
+};
+
+let xMousePos;
+let yMousePos;
+
+function onMouseMove(e) {
+  let bounds = canvas.getBoundingClientRect();
+  let x = e.clientX - bounds.left;
+  let y = e.clientY - bounds.top;
   
+  xMousePos = Math.floor(x/CELL_SIZE);
+  yMousePos = Math.floor(y/CELL_SIZE);
+  //draw();
+}
+
 function draw(ctx, isLive) {
   const color = isLive ? COLORS.live : COLORS.dead;
   function f(xGrid, yGrid) {
@@ -81,20 +119,26 @@ const reloadBoard = () => board = newBoard();
 const renderRow = (r, y) => r.map((c, i) => (c ? drawAlive(i, y) : drawDead(i, y)) && c);
 function renderBoard(b) {
   ctx.clearRect(0, 0, width, height);
-  return b.map(renderRow);
+  let ret = b.map(renderRow);
+  ctx.strokeStyle = COLORS.mouse;
+  ctx.fillStyle = COLORS.mouse;
+  ctx.fillRect(xMousePos*CELL_SIZE,
+    yMousePos*CELL_SIZE,
+    CELL_SIZE-2,
+    CELL_SIZE-2);
 }
 
 function togglePlaying() {
-    if (isRunning) {
-      cancelAnimationFrame(frameID);
-      playPause.querySelector('i').classList.add(startClass);
-      playPause.querySelector('i').classList.remove(pauseClass);        
-    } else {
-        frameID = requestAnimationFrame(main);
-      playPause.querySelector('i').classList.remove(startClass);
-      playPause.querySelector('i').classList.add(pauseClass);        
-    }
-    isRunning = !isRunning;
+  if (isRunning) {
+    cancelAnimationFrame(frameID);
+    playPause.querySelector('i').classList.add(startClass);
+    playPause.querySelector('i').classList.remove(pauseClass);        
+  } else {
+    frameID = requestAnimationFrame(main);
+    playPause.querySelector('i').classList.remove(startClass);
+    playPause.querySelector('i').classList.add(pauseClass);        
+  }
+  isRunning = !isRunning;
 }
 
 function adjacencyBoard(board, arrayOfNeighborCoords) {
@@ -181,11 +225,26 @@ function neighborCoordinatesFromBoard(board) {
 
 function main() {
     if (isRunning) {
-      step();
+      tick++;
+      if(tick % 10 == 0) {
+        step();
+      }
+      renderBoard(board);
       setTimeout(() => {
         frameID = requestAnimationFrame(main);    
-      }, 1000/TARGET_FPS);    
+      }, 100/TARGET_FPS);    
     }
+}
+let tick = 0;
+function renderUpdate() {
+  if (isRunning) {
+    tick++;
+    //step();
+    renderBoard(board);
+    setTimeout(() => {
+      frameID = requestAnimationFrame(renderUpdate);    
+    }, 100/TARGET_FPS);    
+  }
 }
 
 function step() {
@@ -196,3 +255,4 @@ function step() {
 }
 
 board = newBoard();
+//renderUpdate();
