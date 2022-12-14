@@ -2,22 +2,28 @@ const playPause = document.querySelector('[button-play-pause]');
 const reload = document.querySelector('[button-reload]');
 const playOnce = document.querySelector('[button-play-once]');
 
-
 const chooseBlue = document.querySelector('[button-blue]');
 const chooseBlack = document.querySelector('[button-black]');
 const chooseGreen = document.querySelector('[button-green]');
 const chooseRed = document.querySelector('[button-red]');
 const chooseWhite = document.querySelector('[button-white]');
 
-/*
-const placementButtons = {
-  blue: chooseBlue,
-  black: chooseBlack,
-  green: chooseGreen,
-  red: chooseRed,
-  white: chooseWhite
+
+const mapaColors = {
+  white: 0, // espaço em branco
+  green: 1, // portão de saída
+  red: 2, // rosa, são pessoas
+  black: 3, // parede
+  blue: 3 // não acho que precisaremos
 };
-*/
+const lifeStates = {
+  dead: 0,
+  alive: 1,
+};
+const cellData = {
+  state: 0,
+};
+
 let placeChoice;
 
 // const placeChoices = ['blue', 'black', 'green', 'red', 'white'];
@@ -39,7 +45,7 @@ const startClass = 'fa-play';
 const pauseClass = 'fa-pause';
 const TARGET_FPS = 2;
 //const CELL_SIZE= 8;
-const SIZE = 3;
+const SIZE = 64;
 const canvas = document.querySelector('#canvas');
 canvas.onmousemove = onMouseMove;
 const ctx = canvas.getContext('2d');
@@ -57,7 +63,11 @@ let board;
 const COLORS = {
   live: 'rgba(40, 169, 255, 1)',
   dead: 'rgba(255, 255, 255, 1)',
-  mouse: 'rgba(255, 50, 50, 1)'
+  mouse: 'rgba(255, 50, 50, 1)',
+  white: 'rgba(255, 255, 255, 1)',
+  green: 'rgba(0, 255, 0, 1)',
+  red: 'rgba(255, 70, 255, 1)',
+  black: 'rgba(0, 0, 0, 1)',
 };
 
 let xMousePos;
@@ -87,13 +97,32 @@ function draw(ctx, isLive) {
   return f;
 }
 
+
 const drawAlive = draw(ctx, true);
 const drawDead = draw(ctx, false);
 
+function drawState(ctx, cell, xGrid, yGrid) {
+  let color;
+  if(cell.state === lifeStates.alive) {color = COLORS.live;} else {color = COLORS.dead;}
+  ctx.lineWidth = 5;
+  ctx.strokeStyle = color;
+  ctx.fillStyle = color;
+  ctx.fillRect(
+    xGrid*CELL_SIZE,
+    yGrid*CELL_SIZE,
+    CELL_SIZE-2,
+    CELL_SIZE-2);
+}
 // rules
 const FEW = 2;
 const MANY = 3;
 const PLENTY = 3;
+
+const isLiveState = c => c.state === lifeStates.alive;
+const isUnderPopulatedCheck = n => n < FEW;
+const isOverPopulatedCheck = n => n > MANY;
+const canReproduceCheck = n => n === PLENTY;
+const willContinueCheck = n => !(isUnderPopulatedCheck(n)) && !(isOverPopulatedCheck(n));
 
 const isLive = c => c === ALIVE;
 const isUnderPopulated = n => n < FEW;
@@ -102,12 +131,20 @@ const canReproduce = n => n === PLENTY;
 const willContinue = n => !(isUnderPopulated(n)) && !(isOverPopulated(n));
 //end rules
 
-function newRow() {return Array(SIZE).fill(DEAD);}
-function newBoard () {
+function newRow() {return Array(SIZE).fill({state: lifeStates.dead});}
+//function newRow() {return Array(SIZE).fill(DEAD);}
+/*function newBoard () {
   let board = newRow().map(newRow);
   board[1][0] = true;
   board[1][1] = true;
   board[1][2] = true;
+  return board;
+}*/
+function newBoard () {
+  let board = newRow().map(newRow);
+  board[1][0] = {state: lifeStates.alive};
+  board[1][1] = {state: lifeStates.alive};
+  board[1][2] = {state: lifeStates.alive};
   return board;
 }
 function newEmptyBoard () {
@@ -116,7 +153,8 @@ function newEmptyBoard () {
 }
 const reloadBoard = () => board = newBoard();
 
-const renderRow = (r, y) => r.map((c, i) => (c ? drawAlive(i, y) : drawDead(i, y)) && c);
+//const renderRow = (r, y) => r.map((c, i) => (c ? drawAlive(i, y) : drawDead(i, y)) && c);
+const renderRow = (r, y) => r.map((cell, i) => (drawState(ctx, cell, i, y)) && cell);
 function renderBoard(b) {
   ctx.clearRect(0, 0, width, height);
   let ret = b.map(renderRow);
@@ -146,7 +184,9 @@ function adjacencyBoard(board, arrayOfNeighborCoords) {
   for (let x = 0; x < board.length; x++) {
     for (let y = 0; y < board.length; y++) {
       const neighbors = arrayOfNeighborCoords[x][y].map(xy => cellAtCoordinate(board, ...xy));
-      nextBoard[x][y] = neighbors.filter(isLive).length;
+      // nextBoard[x][y] = neighbors.filter(isLive).length;
+      nextBoard[x][y] = neighbors.filter((t) => t.state === lifeStates.alive).length;
+      //=================================================
     }
   }
   return nextBoard;
@@ -168,6 +208,22 @@ function neighborCellsForCoordinateArray(board, arrayOfNeighborCoords){
 }
 
 function stateFromNeighborCount (neighborCount, cell) {
+  if (isLiveState(cell)) {
+    if (isUnderPopulatedCheck(neighborCount)) {
+      return {state: lifeStates.dead};
+    } else if (isOverPopulatedCheck(neighborCount)) {
+      return {state: lifeStates.dead};
+    } else if (willContinueCheck(neighborCount)) {
+      return {state: lifeStates.alive};
+    }
+  } else if (canReproduceCheck(neighborCount)) {
+    return {state: lifeStates.alive};
+  } else {
+    return {state: lifeStates.dead};
+  }
+};
+/*
+function stateFromNeighborCount (neighborCount, cell) {
   if (isLive(cell)) {
     if (isUnderPopulated(neighborCount)) {
       return DEAD;
@@ -181,7 +237,7 @@ function stateFromNeighborCount (neighborCount, cell) {
   } else {
     return DEAD;
   }
-};
+};*/
 
 function numberRowAsLiveDeadCells(rowOfNumbers, rowOfCells){return rowOfNumbers.map((n, i) => stateFromNeighborCount(n, rowOfCells[i]));}
 function numberBoardAsLiveDeadCells(boardOfNumbers, boardOfCells){return boardOfNumbers.map((r, i) => numberRowAsLiveDeadCells(r, boardOfCells[i]));}
@@ -226,26 +282,18 @@ function neighborCoordinatesFromBoard(board) {
 function main() {
     if (isRunning) {
       tick++;
+      // taxa de atualização da simulação
       if(tick % 10 == 0) {
         step();
       }
       renderBoard(board);
+      // taxa de atualização da animação
       setTimeout(() => {
         frameID = requestAnimationFrame(main);    
       }, 100/TARGET_FPS);    
     }
 }
 let tick = 0;
-function renderUpdate() {
-  if (isRunning) {
-    tick++;
-    //step();
-    renderBoard(board);
-    setTimeout(() => {
-      frameID = requestAnimationFrame(renderUpdate);    
-    }, 100/TARGET_FPS);    
-  }
-}
 
 function step() {
   let coords = neighborCoordinatesFromBoard(board);
@@ -255,4 +303,3 @@ function step() {
 }
 
 board = newBoard();
-//renderUpdate();
