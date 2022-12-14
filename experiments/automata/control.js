@@ -8,13 +8,13 @@ const chooseGreen = document.querySelector('[button-green]');
 const chooseRed = document.querySelector('[button-red]');
 const chooseWhite = document.querySelector('[button-white]');
 
-
+let srcImage = document.getElementById('i');
 const mapaColors = {
   white: 0, // espaço em branco
   green: 1, // portão de saída
   red: 2, // rosa, são pessoas
   black: 3, // parede
-  blue: 3 // não acho que precisaremos
+  blue: 4 // não acho que precisaremos
 };
 const lifeStates = {
   dead: 0,
@@ -103,7 +103,17 @@ const drawDead = draw(ctx, false);
 
 function drawState(ctx, cell, xGrid, yGrid) {
   let color;
-  if(cell.state === lifeStates.alive) {color = COLORS.live;} else {color = COLORS.dead;}
+  const state = cell.state;
+  switch (state) {
+    case mapaColors.white: color = COLORS.white; break;
+    case mapaColors.green: color = COLORS.green; break;
+    case mapaColors.red: color = COLORS.red; break;
+    case mapaColors.blue: color = COLORS.live; break;
+    default:
+      color = COLORS.black;
+      break;
+  }
+  //if(cell.state === lifeStates.alive) {color = COLORS.live;} else {color = COLORS.dead;}
   ctx.lineWidth = 5;
   ctx.strokeStyle = color;
   ctx.fillStyle = color;
@@ -132,19 +142,10 @@ const willContinue = n => !(isUnderPopulated(n)) && !(isOverPopulated(n));
 //end rules
 
 function newRow() {return Array(SIZE).fill({state: lifeStates.dead});}
-//function newRow() {return Array(SIZE).fill(DEAD);}
-/*function newBoard () {
-  let board = newRow().map(newRow);
-  board[1][0] = true;
-  board[1][1] = true;
-  board[1][2] = true;
-  return board;
-}*/
-function newBoard () {
-  let board = newRow().map(newRow);
-  board[1][0] = {state: lifeStates.alive};
-  board[1][1] = {state: lifeStates.alive};
-  board[1][2] = {state: lifeStates.alive};
+
+function newBoard() {
+  let board = newEmptyBoard();
+  board = boardFromImageData(srcImage, board);
   return board;
 }
 function newEmptyBoard () {
@@ -158,6 +159,9 @@ const renderRow = (r, y) => r.map((cell, i) => (drawState(ctx, cell, i, y)) && c
 function renderBoard(b) {
   ctx.clearRect(0, 0, width, height);
   let ret = b.map(renderRow);
+  
+
+  // draw mouse cursor
   ctx.strokeStyle = COLORS.mouse;
   ctx.fillStyle = COLORS.mouse;
   ctx.fillRect(xMousePos*CELL_SIZE,
@@ -184,9 +188,7 @@ function adjacencyBoard(board, arrayOfNeighborCoords) {
   for (let x = 0; x < board.length; x++) {
     for (let y = 0; y < board.length; y++) {
       const neighbors = arrayOfNeighborCoords[x][y].map(xy => cellAtCoordinate(board, ...xy));
-      // nextBoard[x][y] = neighbors.filter(isLive).length;
       nextBoard[x][y] = neighbors.filter((t) => t.state === lifeStates.alive).length;
-      //=================================================
     }
   }
   return nextBoard;
@@ -222,22 +224,6 @@ function stateFromNeighborCount (neighborCount, cell) {
     return {state: lifeStates.dead};
   }
 };
-/*
-function stateFromNeighborCount (neighborCount, cell) {
-  if (isLive(cell)) {
-    if (isUnderPopulated(neighborCount)) {
-      return DEAD;
-    } else if (isOverPopulated(neighborCount)) {
-      return DEAD;
-    } else if (willContinue(neighborCount)) {
-      return ALIVE;
-    }
-  } else if (canReproduce(neighborCount)) {
-    return ALIVE;
-  } else {
-    return DEAD;
-  }
-};*/
 
 function numberRowAsLiveDeadCells(rowOfNumbers, rowOfCells){return rowOfNumbers.map((n, i) => stateFromNeighborCount(n, rowOfCells[i]));}
 function numberBoardAsLiveDeadCells(boardOfNumbers, boardOfCells){return boardOfNumbers.map((r, i) => numberRowAsLiveDeadCells(r, boardOfCells[i]));}
@@ -303,3 +289,54 @@ function step() {
 }
 
 board = newBoard();
+renderBoard(board);
+
+function getColorByValue(pixel) {
+  if (pixel[0] > 200 && pixel[1] > 200 && pixel[2] > 200) {
+      return {state: mapaColors.white};
+  } else if (pixel[0] < 100 && pixel[1] > 200 && pixel[2] < 100) {
+      return {state: mapaColors.green};
+  } else if (pixel[0] > 200 && pixel[1] < 100 && pixel[2] > 200) {
+      return {state: mapaColors.red};
+  } else {
+      return {state: mapaColors.black};
+  }
+}
+
+function boardFromImageData(imgEl, buffer) {
+  // o próximo passo é pegar os dados dessa imagem para colocar no tabuleiro
+  var blockSize = 5, // only visit every 5 pixels
+      defaultRGB = {r:0,g:0,b:0}, // for non-supporting envs
+      canvas = document.createElement('canvas'),
+      context = canvas.getContext && canvas.getContext('2d'),
+      data, width, height,
+      i = 0,
+      length,
+      rgb = {r:0,g:0,b:0},
+      count = 0;
+      
+  if (!context) {
+      return defaultRGB;
+  }
+
+  height = canvas.height = imgEl.naturalHeight || imgEl.offsetHeight || imgEl.height;
+  width = canvas.width = imgEl.naturalWidth || imgEl.offsetWidth || imgEl.width;
+  if (buffer.length < Math.max(width, height)) {
+      console.log("Insufficient capacity of buffer");
+      return;
+  }
+  context.drawImage(imgEl, 0, 0);
+
+  try {
+      data = context.getImageData(0, 0, width, height);
+  } catch(e) {
+      /* security error, img on diff domain */alert('security error, img on diff domain');
+      return defaultRGB;
+  }
+  length = data.data.length;
+  for(let i = 0; i < length; i += 4) {
+    buffer[Math.floor(count/width)][count%width] = getColorByValue([data.data[i  ], data.data[i+1], data.data[i+2]]);
+    count++;
+}
+  return buffer;
+}
