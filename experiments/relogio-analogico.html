@@ -1,0 +1,26 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="UTF-8"/>
+    <title>Lince | Relógio Analógico</title>
+    <style>
+      canvas {
+        position: absolute;
+      }
+      #pointers {
+        z-index: 2;
+      }
+      #clock {
+        background-color: antiquewhite;
+        z-index: 1;
+      }
+    </style>
+  </head>
+  <body>
+    <div>
+      <canvas id="clock" width="280" height="280" style="border: 2px solid bisque">Canvas element unable to execute</canvas>
+      <canvas id="pointers" width="280" height="280" style="border: 2px solid bisque">Canvas element unable to execute</canvas>
+    </div>
+    <script src="relogio-analogico/clock.js"></script>
+  </body>
+</html>
