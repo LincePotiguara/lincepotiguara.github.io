@@ -1,5 +1,10 @@
-let canvas = document.getElementById("clock");
+// why in omne sanctissimum if I use this line it doesn't use anti-alias
+// let canvas = document.getElementById("clock");
+// but this line does for both chrome and firefox
+let canvas = document.getElementById("pointers");
 
+let canvas2 = document.getElementById("clock");
+let bg = canvas2.getContext("2d");
 // canvas where we draw the body of the clock
 let body = canvas.getContext("2d");
 
@@ -7,12 +12,34 @@ let body = canvas.getContext("2d");
 let pointers = document.getElementById("pointers").getContext("2d");
 const context = pointers;
 
-const orange = '#ffa500';
 // this is more of a green shade
-const white1 = '#8b2439';
-const white3 = '#446127';
+const burgundy = '#8b2439';
 const red = '#ff6b6b';
 const black = '#3f3c3c';
+
+// img
+const image = new Image();
+// Draw when image has loaded
+image.onload = drawBgImage; 
+image.src = "./relogio-analogico/estrela.png";
+function drawBgImage() {
+    const size = clockRadius*1.2;
+    // image size in pixels
+    const imgSize = 500;
+    // the center point of the image
+    let imgCenter = {
+        x: 250,
+        y: 275
+    };
+    // the normalized center point
+    let coords = {
+        x: imgCenter.x/imgSize,
+        y: imgCenter.y/imgSize
+    };
+    bg.drawImage(this, centerCoord.x- coords.x*size, centerCoord.y - coords.y*size, size, size);
+  }
+  
+
 
 /**
  * Clock radius.
@@ -90,12 +117,12 @@ function translate(pos, vec) {
  * @see https://developer.mozilla.org/en-US/docs/Web/API/Geolocation_API/Using_the_Geolocation_API
  */
 function drawClock() {
-    // context.globalAlpha = 0.3; // set global alpha
-
     // Draw clock border.
-    context.strokeStyle = black;
-    context.lineWidth = 3;
-    circle(center, clockRadius, false);
+    body.strokeStyle = black;
+    body.lineWidth = 3;
+    body.beginPath();
+    body.arc(centerCoord.x, centerCoord.y, clockRadius, 0, 2 * Math.PI, false);
+    body.stroke();
 
     /**
    * <p>A modulo function that works for negative numbers.</p>
@@ -111,42 +138,7 @@ function drawClock() {
    */
     Number.prototype.mod = function(b) {
         return ((this % b) + b) % b;
-    }
-    ;
-
-    /**
-   * Draw the sun light arc.
-   *
-   * @param {Object<{latitude, longitude}>} loc location.
-   * @param {Number} utcoff UTC offset.
-   * @see https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Date/getTimezoneOffset
-   */
-    function drawArc(loc, utcoff) {
-        let today = new Date();
-        let times = SunCalc.getTimes(today, loc.latitude, loc.longitude);
-
-        // your local timezone offset in minutes (eg -180).
-        // NOT the timezone offset of the date object.
-        let offset;
-        let timezoneOffset = today.getTimezoneOffset() / 60;
-        if (typeof utcoff === "undefined") {
-            offset = 0;
-            cityOffset = -timezoneOffset;
-        } else {
-            offset = timezoneOffset + utcoff;
-            cityOffset = utcoff;
-        }
-
-        // format sunrise time from the Date object
-        let sunriseStr = times.sunrise.getHours() + offset + ":" + times.sunrise.getMinutes();
-
-        // format sunset time from the Date object
-        let sunsetStr = times.sunset.getHours() + offset + ":" + times.sunset.getMinutes();
-
-        console.log(sunriseStr, sunsetStr);
-        context.strokeStyle = orange;
-        arc(center, clockRadius - 8, sunriseStr, sunsetStr, false);
-    }
+    };
 
     // Draw the tick numbers.
     context.textAlign = "center";
@@ -154,7 +146,7 @@ function drawClock() {
 
     // Draw 12 inner numbers.
     context.font = setFont(clockRadius / 10);
-    drawClock.romans.map((n,i)=>{
+    drawClock.romans.map((n,i) => {
         context.fillStyle = n.c;
         var coord = polar2Cartesian(0.85 * clockRadius, i * fiveMin);
         // translate to the center of the canvas
@@ -170,40 +162,40 @@ function drawClock() {
  */
 let romans  = [{
     txt: "I",
-    c: white1
+    c: burgundy
 }, {
     txt: "II",
-    c: white1
+    c: burgundy
 }, {
     txt: "III",
-    c: white1
+    c: burgundy
 }, {
     txt: "IV",
-    c: white1
+    c: burgundy
 }, {
     txt: "V",
-    c: white1
+    c: burgundy
 }, {
     txt: "VI",
-    c: white1
+    c: burgundy
 }, {
     txt: "VII",
-    c: white1
+    c: burgundy
 }, {
     txt: " VIII",
-    c: white1
+    c: burgundy
 }, {
     txt: "IX",
-    c: white1
+    c: burgundy
 }, {
     txt: "X",
-    c: white1
+    c: burgundy
 }, {
     txt: "XI",
-    c: white1
+    c: burgundy
 }, {
     txt: "XII",
-    c: white1
+    c: burgundy
 },];
 
 drawClock.romans = romans.reverse();
@@ -212,21 +204,6 @@ let centerCoord = translate({
     y: 0
 }, center);
 
-/**
- * Clock number x color.
- * @member {Array<{txt: String, c: color}>} decimal clock numbers.
- */
-drawClock.decimals = Array.from(Array(24), (_,i)=>{
-    return {
-        txt: String(i),
-        c: white1
-    };
-}
-);
-drawClock.decimals[0].txt = "24";
-drawClock.decimals[6].c = white3;
-drawClock.decimals[18].c = white3;
-// Now draw the pointers
 
 var runAnimation = (()=>{
     // clock handles width x length X color
@@ -245,10 +222,10 @@ var runAnimation = (()=>{
     }, {
         width: 1,
         length: 0.95,
-        c: white3
+        c: black
     }, ];
+    // one minute is 6 degrees
     const oneMin = Math.PI / 30;
-    // 6 degrees
     let timer = null;
 
     function drawHandles() {
@@ -270,14 +247,13 @@ var runAnimation = (()=>{
         clock_handles[2].time2Angle = (-1) * oneMin * seconds;
 
         // 24 hour pointer
-        clock_handles[3].time2Angle = (-1) * fiveMin * (+hours + minutes / 60) * 0.5;
+        // clock_handles[3].time2Angle = (-1) * fiveMin * (+hours + minutes / 60) * 0.5;
 
         // Clear screen.
         pointers.clearRect(0, 0, canvas.width, canvas.height);
 
         let theight = clockRadius / 15;
         pointers.font = setFont(theight);
-        pointers.fillStyle = white1;
 
         pointers.lineCap = "round";
 
@@ -297,7 +273,7 @@ var runAnimation = (()=>{
             pointers.stroke();
         }
         );
-        // Draw the cap in front
+        // Draw the red cap in front
         let capRadius = clockRadius / 12;
 
         pointers.beginPath();
@@ -315,21 +291,3 @@ var runAnimation = (()=>{
 }
 )();
 
-/**
- * Draw a circle.
- *
- * @param {point} center center of the circle.
- * @param {Number} radius radius of the circle.
- * @param {Boolean} fill draws a solid or hollow circle.
- * @see https://riptutorial.com/html5-canvas/example/11126/beginpath--a-path-command-
- * @see https://developer.mozilla.org/en-US/docs/Web/API/CanvasRenderingContext2D/stroke
- * @see https://developer.mozilla.org/en-US/docs/Web/API/CanvasRenderingContext2D/closePath
- */
-function circle(center, radius, fill=true) {
-    pointers.beginPath();
-    pointers.arc(center[0], center[1], radius, 0, 2 * Math.PI);
-    if (fill)
-        pointers.fill();
-    else
-        pointers.stroke();
-}
