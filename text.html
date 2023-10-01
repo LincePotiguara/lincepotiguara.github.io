@@ -1,0 +1,47 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="UTF-8"/>
+    <title>Lince | Relógio Analógico</title>
+    <style>
+      canvas {
+        position: absolute;
+      }
+      #pointers {
+        z-index: 2;
+      }
+      #clock {
+        background-color: antiquewhite;
+        z-index: 1;
+      }
+    </style>
+  </head>
+  <body>
+    <div>
+      <canvas id="clock" width="420px" height="420px" style="border: 2px solid bisque">Canvas element unable to execute</canvas>
+      <canvas id="pointers" width="420px" height="420px" style="border: 2px solid bisque">Canvas element unable to execute</canvas>
+    </div>
+    <script>
+// why in omne sanctissimum if I use this line it doesn't use anti-alias
+// let canvas = document.getElementById("clock");
+// but this line does for both chrome and firefox
+// This minimum test doen't work yet. 
+// check clock.js to get a better look at it
+let canvas = document.getElementById("pointers");
+
+// canvas where we draw the body of the clock
+let body = canvas.getContext("2d");
+
+// canvas where we draw and update clock pointers
+let pointers = document.getElementById("pointers").getContext("2d");
+const context = pointers;
+let clockRadius = Math.min(canvas.width, canvas.height) / 3.1;
+body.strokeStyle = '#3f3c3c';
+body.lineWidth = 3;
+body.beginPath();
+body.arc(canvas.width/2, canvas.height/2, clockRadius, 0, 2 * Math.PI, false);
+body.stroke();
+
+    </script>
+  </body>
+</html>
