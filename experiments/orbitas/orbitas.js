@@ -33,7 +33,8 @@
 
 "use strict";
 
-
+var timer = null;
+var delta = 0;
 
 // prettier-ignore
 var axisVertices = new Float32Array([
@@ -240,6 +241,30 @@ function makeNormalMatrixElements(model, view) {
 const deg2rad = (deg) => (deg * Math.PI) / 180.0;
 
 /**
+ * Returns a number fractional part and its number of digits.
+ * @param {Number} n float number.
+ * @returns {Object<fractional:String,ndigits:Number>} fractional part and number of digits.
+ * @see https://en.wikipedia.org/wiki/Decimal#Decimal_fractions
+ */
+function getFractionalPart(n) {
+  if (Number.isInteger(+n)) return { fractional: "0", ndigits: 0 };
+  const decimalStr = n.toString().split(".")[1];
+  return { fractional: decimalStr, ndigits: +decimalStr.length };
+}
+
+/**
+ * Returns a number with a fixed amount of decimal places.
+ * @param {Number} n float number.
+ * @param {Number} dig number of digits.
+ * @returns {Number} n with dig decimal places.
+ * @see https://en.wikipedia.org/wiki/Decimal_separator
+ */
+function roundNumber(n, dig) {
+  const limit = 10 ** dig;
+  return Math.round(n * limit) / limit;
+}
+
+/**
  * Render our geometry.
  *
  * @param {WebGLRenderingContext} gl WebGL context.
@@ -333,7 +358,7 @@ function draw(gl, rad) {
  * while {@link draw} does things that have to be repeated each time the canvas is
  * redrawn.
  */
-function mainEntrance() {
+function mainEntrance(rpc, rev) {
   // retrieve <canvas> element
   var canvas = document.getElementById("theCanvas");
 
@@ -414,20 +439,40 @@ function mainEntrance() {
 
   // code to actually render our geometry
 
-  modelMatrix = new Matrix4();
-
+  
   /**
    * A closure to set up an animation loop in which the
    * angle grows by "increment" each frame.
    * @return {updateModelMatrix}
    * @function
    * @global
-   */
-  var animate = () => {
+  */
+ var animate = () => {
+  // tick += 1
+  // if(delta > Math.PI*2) {delta = delta - Math.PI*2;}
+  delta += 1/60*(Math.PI*2);
+  // if(delta > Math.PI*2) {delta = delta - Math.PI*2;}
+  var ang = delta*rpc;
 
+  var x = 10 * Math.cos(ang);
+  var z = 10 * Math.sin(ang);
+  var rotation = 12*delta/rev;
+  // Rotation
+  modelMatrix = new Matrix4().rotate(rotation, 0, rotation, 1);
+  // 10 radius for translation
+  modelMatrix.translate(10,0,0);
+  // Make rotation neutral
+  modelMatrix.rotate(-rotation, 0, rotation, 1);
+  // Revolution around 0,0,0
+  modelMatrix.rotate(rotation*rev, 0, rotation*rev, 1);
+  // modelMatrix.multiply(new Matrix4().translate(10, 0, 0));
+
+  draw(gl, ang);
+  timer = requestAnimationFrame(animate);
   };
   animate();
 }
+var tick = 1;
 
 /**
  * Triggers the {@link mainEntrance} animation.
@@ -435,6 +480,13 @@ function mainEntrance() {
  * @event load - run the animation.
  * @see https://developer.mozilla.org/en-US/docs/Web/API/Window/load_event
  */
-window.addEventListener("load", (event) => {
-  mainEntrance();
-});
+window.onload = () => {
+  // complete revolutions about the center per cycle
+  const urlParams = new URL(document.location).searchParams;
+  let rpc = urlParams.get("rpc") || "1"; 
+  let rev = urlParams.get("rev");
+
+  rpc = Number.parseInt(rpc) || 1;
+  rev = Number.parseInt(rev) || 365;
+  mainEntrance(rpc, rev);
+};
