@@ -441,38 +441,30 @@ function mainEntrance(rpc, rev) {
 
   
   /**
-   * A closure to set up an animation loop in which the
-   * angle grows by "increment" each frame.
+   * A closure to set up an animation loop
    * @return {updateModelMatrix}
    * @function
    * @global
   */
  var animate = () => {
-  // tick += 1
-  // if(delta > Math.PI*2) {delta = delta - Math.PI*2;}
-  delta += 1/60*(Math.PI*2);
-  // if(delta > Math.PI*2) {delta = delta - Math.PI*2;}
-  var ang = delta*rpc;
+    delta += 1/60*(Math.PI*2);
+    var ang = delta*rpc;
+    // Slow revolution to make rotation not as fast
+    var rotation = (1/rev)*delta*(180 / Math.PI);
+    // Revolution around 0,0,0
+    modelMatrix = new Matrix4().rotate(rotation, 0, 1, 0);
+    // 10 radius for translation
+    modelMatrix.translate(10,0,0);
+    // Make rotation neutral
+    modelMatrix.rotate(-rotation, 0, 1, 0);
+    // Rotation
+    modelMatrix.rotate(rotation*rev, 0, 1, 0);
 
-  var x = 10 * Math.cos(ang);
-  var z = 10 * Math.sin(ang);
-  var rotation = 12*delta/rev;
-  // Rotation
-  modelMatrix = new Matrix4().rotate(rotation, 0, rotation, 1);
-  // 10 radius for translation
-  modelMatrix.translate(10,0,0);
-  // Make rotation neutral
-  modelMatrix.rotate(-rotation, 0, rotation, 1);
-  // Revolution around 0,0,0
-  modelMatrix.rotate(rotation*rev, 0, rotation*rev, 1);
-  // modelMatrix.multiply(new Matrix4().translate(10, 0, 0));
-
-  draw(gl, ang);
-  timer = requestAnimationFrame(animate);
+    draw(gl, ang);
+    timer = requestAnimationFrame(animate);
   };
   animate();
 }
-var tick = 1;
 
 /**
  * Triggers the {@link mainEntrance} animation.
