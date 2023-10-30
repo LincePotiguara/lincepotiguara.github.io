@@ -7,14 +7,64 @@ Vertex shader does basic Lambert shading. -->
         <meta charset="utf-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
         <title>Partial Hierarchy</title>
+        <style>
+            .flex-container {
+                display: flex;
+                flex-wrap: wrap;
+            }
+            input {
+                min-width: 200px;
+                /* outline: none; */
+                /* appearance: none; */
+                /* width: 25px; */
+                /* height: 25px; */
+                /* -webkit-appearance: none; */
+                appearance: none;
+                background: #d3d3d3;
+                cursor: pointer;
+            }
+            .slider-container {
+                flex-direction: column;
+                padding: 20px;
+            }
+            input::-webkit-slider-thumb{
+                /* outline: none; */
+                appearance: none;
+                width: 25px;
+                height: 25px;
+                background: #0096ec;
+                -webkit-appearance: none;
+            }
+        </style>
     </head>
 
     <body>
-        <canvas id="theCanvas" width="380" height="480">
-            Please use a browser that supports "canvas"
-        </canvas>
-
+        <div class="flex-container">
+            <canvas id="theCanvas" width="380" height="480">
+                Please use a browser that supports "canvas"
+            </canvas>
+        
         <br />
+        <div class="slider-container">
+            <p>Torso</p>
+            <input type="range" min="-360" max="360" value="0" id="torso">
+        
+            <p>Shoulder</p>
+            <input type="range" min="-360" max="360" value="0" id="shoulder">
+        
+            <p>Arm</p>
+            <input type="range" min="-360" max="360" value="0" id="arm">
+        
+            <p>Hand</p>
+            <input type="range" min="-360" max="360" value="0" id="hand">
+        
+            <p>Head</p>
+            <input type="range" min="-360" max="360" value="0" id="head">
+        
+            <p>Zoom</p>
+            <input type="range" min="20" max="90" value="30" id="zoom">
+        </div>
+
         <details>
             <summary style="font-size: 120%">Keyboard controls:</summary>
 
@@ -28,7 +78,7 @@ Vertex shader does basic Lambert shading. -->
                 <li id="options"></li>
             </ul>
         </details>
-
+        </div>
         <script id="vertexLightingShader" type="x-shader/x-vertex">
             uniform mat4 model;
             uniform mat4 view;
@@ -69,5 +119,6 @@ Vertex shader does basic Lambert shading. -->
         <script src="modelagem-hierarquica/cuon-matrix.js"></script>
         <script src="modelagem-hierarquica/simple-rotator.js"></script>
         <script src="modelagem-hierarquica/hierarquia.js"></script>
+        <script src="modelagem-hierarquica/controls.js"></script>
     </body>
 </html>
