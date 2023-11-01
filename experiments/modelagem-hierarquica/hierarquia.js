@@ -529,15 +529,15 @@ function draw(useRotator = true) {
     // hand relative to arm
     s.push(new Matrix4(s.top()).multiply(handMatrix));
     renderCube(s, handMatrixLocal);
-    s.pop();
-    s.pop();
-    s.pop();
+    s.pop(); // hand
+    s.pop(); // arm
+    s.pop(); // shoulder
 
     // head relative to torso
     s.push(new Matrix4(s.top()).multiply(headMatrix));
     renderCube(s, headMatrixLocal);
-    s.pop();
-    s.pop();
+    s.pop(); // head
+    s.pop(); // torso
 
     if (!s.isEmpty()) {
         console.log("Warning: pops do not match pushes");

@@ -47,8 +47,6 @@ headInput.addEventListener("input", (event) => {
 zoomInput.addEventListener("input", (event) => {
     console.log(rotator.getViewDistance())
     var d = Number.parseInt(event.target.value);
-    // d = rotator.getViewDistance();
-    // d = Math.min(d + 1, 90);
     rotator.setViewDistance(d);
     draw()
 });
