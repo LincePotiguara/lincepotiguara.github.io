@@ -1,12 +1,14 @@
 const torsoInput = document.querySelector("#torso");
 const shoulderInput = document.querySelector("#shoulder");
+const shoulderRightInput = document.querySelector("#shoulderRight");
 const armInput = document.querySelector("#arm");
+const armRightInput = document.querySelector("#armRight");
 const handInput = document.querySelector("#hand");
+const handRightInput = document.querySelector("#handRight");
 const headInput = document.querySelector("#head");
 const zoomInput = document.querySelector("#zoom");
 
 torsoInput.addEventListener("input", (event) => {
-    //value.textContent = event.target.value;
     joint.torso = Number.parseInt(event.target.value);
     torsoMatrix.setTranslate(0, 0, 0).rotate(joint.torso, 0, 1, 0);
     draw()
@@ -22,6 +24,16 @@ shoulderInput.addEventListener("input", (event) => {
     draw()
 });
 
+shoulderRightInput.addEventListener("input", (event) => {
+    joint.shoulderRight = Number.parseInt(event.target.value);
+    var currentShoulderRot = new Matrix4()
+                .setTranslate(0, 2, 0)
+                .rotate(-joint.shoulderRight, 1, 0, 0)
+                .translate(0, -2, 0);
+                shoulderRightMatrix.setTranslate(-6.5, 2, 0).multiply(currentShoulderRot);
+    draw()
+});
+
 armInput.addEventListener("input", (event) => {
     joint.arm = Number.parseInt(event.target.value);
     var currentArm = new Matrix4()
@@ -32,9 +44,25 @@ armInput.addEventListener("input", (event) => {
     draw()
 });
 
+armRightInput.addEventListener("input", (event) => {
+    joint.armRight = Number.parseInt(event.target.value);
+    var currentArm = new Matrix4()
+                .setTranslate(0, 2.5, 1.0)
+                .rotate(-joint.armRight, 1, 0, 0)
+                .translate(0, -2.5, -1.0);
+            armRightMatrix.setTranslate(0, -5, 0).multiply(currentArm);
+    draw()
+});
+
 handInput.addEventListener("input", (event) => {
     joint.hand = Number.parseInt(event.target.value);
     handMatrix.setTranslate(0, -4, 0).rotate(joint.hand, 0, 1, 0);
+    draw()
+});
+
+handRightInput.addEventListener("input", (event) => {
+    joint.handRight = Number.parseInt(event.target.value);
+    handRightMatrix.setTranslate(0, -4, 0).rotate(joint.handRight, 0, 1, 0);
     draw()
 });
 
@@ -45,7 +73,6 @@ headInput.addEventListener("input", (event) => {
 });
 
 zoomInput.addEventListener("input", (event) => {
-    console.log(rotator.getViewDistance())
     var d = Number.parseInt(event.target.value);
     rotator.setViewDistance(d);
     draw()

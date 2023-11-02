@@ -40,26 +40,36 @@ Vertex shader does basic Lambert shading. -->
 
     <body>
         <div class="flex-container">
-            <canvas id="theCanvas" width="360" height="480">
-                Please use a browser that supports "canvas"
-            </canvas>
-        
+            <div style="display: flex; align-items: center;">
+                <canvas id="theCanvas" width="360px" height="480px">
+                    Please use a browser that supports "canvas"
+                </canvas>
+            </div>
         <br />
         <div class="slider-container">
             <p>Torso</p>
-            <input type="range" min="-360" max="360" value="0" id="torso">
+            <input type="range" min="-180" max="180" value="0" id="torso">
         
-            <p>Shoulder</p>
-            <input type="range" min="-360" max="360" value="0" id="shoulder">
+            <p>Left Shoulder</p>
+            <input type="range" min="-180" max="180" value="0" id="shoulder">
+            
+            <p>Right Shoulder</p>
+            <input type="range" min="-180" max="180" value="0" id="shoulderRight">
         
-            <p>Arm</p>
-            <input type="range" min="-360" max="360" value="0" id="arm">
+            <p>Left Arm</p>
+            <input type="range" min="-180" max="180" value="0" id="arm">
+            
+            <p>Right Arm</p>
+            <input type="range" min="-180" max="180" value="0" id="armRight">
         
-            <p>Hand</p>
-            <input type="range" min="-360" max="360" value="0" id="hand">
+            <p>Left Hand</p>
+            <input type="range" min="-180" max="180" value="0" id="hand">
+
+            <p>Right Hand</p>
+            <input type="range" min="-180" max="180" value="0" id="handRight">
         
             <p>Head</p>
-            <input type="range" min="-360" max="360" value="0" id="head">
+            <input type="range" min="-180" max="180" value="0" id="head">
         
             <p>Zoom</p>
             <input type="range" min="20" max="90" value="30" id="zoom">

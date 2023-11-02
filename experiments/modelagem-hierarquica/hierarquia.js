@@ -57,8 +57,11 @@ var lightingShader;
 var joint = {
     torso: 0.0,
     shoulder: 45.0,
+    shoulderRight: 45.0,
     arm: 45.0,
+    armRight: 45.0,
     hand: 0.0,
+    handRight: 0.0,
     head: 0.0,
 };
 
@@ -78,6 +81,13 @@ var shoulderMatrix = new Matrix4()
     .translate(0, -2, 0);
 
 /**  @type {Matrix4} */
+var shoulderRightMatrix = new Matrix4()
+    .setTranslate(-6.5, 2, 0)
+    .translate(0, 2, 0)
+    .rotate(-joint.shoulderRight, 1, 0, 0)
+    .translate(0, -2, 0);
+
+/**  @type {Matrix4} */
 var armMatrix = new Matrix4()
     .setTranslate(0, -5, 0)
     .translate(0, 2.5, 1.0)
@@ -85,9 +95,22 @@ var armMatrix = new Matrix4()
     .translate(0, -2.5, -1.0);
 
 /**  @type {Matrix4} */
+var armRightMatrix = new Matrix4()
+    .setTranslate(0, -5, 0)
+    .translate(0, 2.5, 1.0)
+    .rotate(-joint.armRight, 1, 0, 0)
+    .translate(0, -2.5, -1.0);
+
+
+/**  @type {Matrix4} */
 var handMatrix = new Matrix4()
     .setTranslate(0, -4, 0)
     .rotate(joint.hand, 0, 1, 0);
+
+/**  @type {Matrix4} */
+var handRightMatrix = new Matrix4()
+    .setTranslate(0, -4, 0)
+    .rotate(joint.handRight, 0, 1, 0);
 
 /**  @type {Matrix4} */
 var headMatrix = new Matrix4()
@@ -96,8 +119,11 @@ var headMatrix = new Matrix4()
 
 var torsoMatrixLocal = new Matrix4().setScale(10, 10, 5);
 var shoulderMatrixLocal = new Matrix4().setScale(3, 5, 2);
+var shoulderRightMatrixLocal = new Matrix4().setScale(3, 5, 2);
 var armMatrixLocal = new Matrix4().setScale(3, 5, 2);
+var armRightMatrixLocal = new Matrix4().setScale(3, 5, 2);
 var handMatrixLocal = new Matrix4().setScale(1, 3, 3);
+var handRightMatrixLocal = new Matrix4().setScale(1, 3, 3);
 var headMatrixLocal = new Matrix4().setScale(4, 4, 4);
 
 /**
@@ -529,6 +555,21 @@ function draw(useRotator = true) {
     // hand relative to arm
     s.push(new Matrix4(s.top()).multiply(handMatrix));
     renderCube(s, handMatrixLocal);
+    s.pop(); // hand
+    s.pop(); // arm
+    s.pop(); // shoulder
+
+    // second shoulder relative to torso
+    s.push(new Matrix4(s.top()).multiply(shoulderRightMatrix));
+    renderCube(s, shoulderRightMatrixLocal);
+
+    // arm relative to shoulder
+    s.push(new Matrix4(s.top()).multiply(armRightMatrix));
+    renderCube(s, armRightMatrixLocal);
+
+    // hand relative to hand
+    s.push(new Matrix4(s.top()).multiply(handRightMatrix));
+    renderCube(s, handRightMatrixLocal);
     s.pop(); // hand
     s.pop(); // arm
     s.pop(); // shoulder
