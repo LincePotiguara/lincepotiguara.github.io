@@ -63,68 +63,103 @@ var joint = {
     hand: 0.0,
     handRight: 0.0,
     head: 0.0,
+    legLeft: 15.0,
+    legRight: 0.0,
+    shinLeft: -15.0,
+    shinRight: -15.0,
 };
 
 /**
- * Transformation matrix that is the root of 5 objects in the scene.
+ * Transformation matrix that is the root of ~5~ objects in the scene.
  * @type {Matrix4}
  */
-var torsoMatrix = new Matrix4()
+const torsoMatrix = new Matrix4()
     .setTranslate(0, 0, 0)
     .rotate(joint.torso, 0, 1, 0);
 
 /**  @type {Matrix4} */
-var shoulderMatrix = new Matrix4()
+const shoulderMatrix = new Matrix4()
     .setTranslate(6.5, 2, 0)
     .translate(0, 2, 0)
     .rotate(-joint.shoulder, 1, 0, 0)
     .translate(0, -2, 0);
 
 /**  @type {Matrix4} */
-var shoulderRightMatrix = new Matrix4()
+const shoulderRightMatrix = new Matrix4()
     .setTranslate(-6.5, 2, 0)
     .translate(0, 2, 0)
     .rotate(-joint.shoulderRight, 1, 0, 0)
     .translate(0, -2, 0);
 
 /**  @type {Matrix4} */
-var armMatrix = new Matrix4()
+const armMatrix = new Matrix4()
     .setTranslate(0, -5, 0)
     .translate(0, 2.5, 1.0)
     .rotate(-joint.arm, 1, 0, 0)
     .translate(0, -2.5, -1.0);
 
 /**  @type {Matrix4} */
-var armRightMatrix = new Matrix4()
+const armRightMatrix = new Matrix4()
     .setTranslate(0, -5, 0)
     .translate(0, 2.5, 1.0)
     .rotate(-joint.armRight, 1, 0, 0)
     .translate(0, -2.5, -1.0);
 
-
 /**  @type {Matrix4} */
-var handMatrix = new Matrix4()
+const handMatrix = new Matrix4()
     .setTranslate(0, -4, 0)
     .rotate(joint.hand, 0, 1, 0);
 
 /**  @type {Matrix4} */
-var handRightMatrix = new Matrix4()
+const handRightMatrix = new Matrix4()
     .setTranslate(0, -4, 0)
     .rotate(joint.handRight, 0, 1, 0);
 
 /**  @type {Matrix4} */
-var headMatrix = new Matrix4()
+const legLeftMatrix = new Matrix4()
+    .setTranslate(1.5 + 0.5, -8, 0)
+    .translate(0, 3, 1.5)
+    .rotate(-joint.legLeft, 1, 0, 0)
+    .translate(0, -3, -1.5);
+
+/**  @type {Matrix4} */
+const legRightMatrix = new Matrix4()
+    .setTranslate(-1.5 - 0.5, -8, 0)
+    .translate(0, 3, 1.5)
+    .rotate(-joint.legRight, 1, 0, 0)
+    .translate(0, -3, -1.5);
+
+/**  @type {Matrix4} */
+const shinLeftMatrix = new Matrix4()
+.setTranslate(0, -5, 0)
+.translate(0, 3, 1.5)
+.rotate(-joint.shinLeft, 1, 0, 0)
+.translate(0, -3, -1.5);
+
+/**  @type {Matrix4} */
+const shinRightMatrix = new Matrix4()
+.setTranslate(0, -5, 0)
+.translate(0, 3, 1.5)
+.rotate(-joint.shinRight, 1, 0, 0)
+.translate(0, -3, -1.5);
+
+/**  @type {Matrix4} */
+const headMatrix = new Matrix4()
     .setTranslate(0, 7, 0)
     .rotate(joint.head, 0, 1, 0);
 
-var torsoMatrixLocal = new Matrix4().setScale(10, 10, 5);
-var shoulderMatrixLocal = new Matrix4().setScale(3, 5, 2);
-var shoulderRightMatrixLocal = new Matrix4().setScale(3, 5, 2);
-var armMatrixLocal = new Matrix4().setScale(3, 5, 2);
-var armRightMatrixLocal = new Matrix4().setScale(3, 5, 2);
-var handMatrixLocal = new Matrix4().setScale(1, 3, 3);
-var handRightMatrixLocal = new Matrix4().setScale(1, 3, 3);
-var headMatrixLocal = new Matrix4().setScale(4, 4, 4);
+const torsoMatrixLocal = new Matrix4().setScale(10, 10, 5);
+const shoulderMatrixLocal = new Matrix4().setScale(3, 5, 2);
+const shoulderRightMatrixLocal = new Matrix4().setScale(3, 5, 2);
+const armMatrixLocal = new Matrix4().setScale(3, 5, 2);
+const armRightMatrixLocal = new Matrix4().setScale(3, 5, 2);
+const handMatrixLocal = new Matrix4().setScale(1, 3, 3);
+const handRightMatrixLocal = new Matrix4().setScale(1, 3, 3);
+const headMatrixLocal = new Matrix4().setScale(4, 4, 4);
+const legLeftMatrixLocal = new Matrix4().setScale(3, 6, 3);
+const legRightMatrixLocal = new Matrix4().setScale(3, 6, 3);
+const shinLeftMatrixLocal = new Matrix4().setScale(3, 5, 3);
+const shinRightMatrixLocal = new Matrix4().setScale(3, 5, 3);
 
 /**
  * Camera position.
@@ -573,6 +608,26 @@ function draw(useRotator = true) {
     s.pop(); // hand
     s.pop(); // arm
     s.pop(); // shoulder
+
+    // leg relative to torso because I don't want to see legs floating
+    s.push(new Matrix4(s.top()).multiply(legLeftMatrix));
+    renderCube(s, legLeftMatrixLocal);
+
+    // shin relative to leg
+    s.push(new Matrix4(s.top()).multiply(shinLeftMatrix));
+    renderCube(s, shinLeftMatrixLocal);
+    s.pop(); // shin
+    s.pop(); // leg
+
+    // leg relative to torso because I don't want to see legs floating
+    s.push(new Matrix4(s.top()).multiply(legRightMatrix));
+    renderCube(s, legRightMatrixLocal);
+
+    // shin relative to leg
+    s.push(new Matrix4(s.top()).multiply(shinRightMatrix));
+    renderCube(s, shinRightMatrixLocal);
+    s.pop(); // shin
+    s.pop(); // leg
 
     // head relative to torso
     s.push(new Matrix4(s.top()).multiply(headMatrix));
