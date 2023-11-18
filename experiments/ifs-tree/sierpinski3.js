@@ -156,7 +156,7 @@ var fractalScene = (loadedScene, maxLevel = 0, colorLevel = 0) => {
 
   const queryString = window.location.search;
   const urlParams = new URLSearchParams(queryString);
-  let jfile = urlParams.get("file") || "sierpinski3.json";
+  let jfile = urlParams.get("file") || "pine_tree.json";
 
   /**
    * Array holding model file names to create scenes.
@@ -174,6 +174,7 @@ var fractalScene = (loadedScene, maxLevel = 0, colorLevel = 0) => {
         "Pentagonal_de_Durer.json",
         "sierpinski3.json",
         "tree.json",
+        "pine_tree.json",
         "sponge.json",
       ];
     });
